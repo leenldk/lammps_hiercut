@@ -1,0 +1,30 @@
+configuration {
+  step        26234
+  dt 1.000000e+00
+  version 2024-06-04
+}
+
+colvar {
+  name bb_rmsd
+  x       2.3853227312725
+}
+
+colvar {
+  name sc_rmsd
+  x       3.5778193817929
+}
+
+restraint {
+  configuration {
+    step 26234
+    name harmonic1
+  }
+}
+
+restraint {
+  configuration {
+    step 26234
+    name harmonic2
+  }
+}
+

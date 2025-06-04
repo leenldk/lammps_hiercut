@@ -1,0 +1,246 @@
+LAMMPS (29 Aug 2024 - Update 1)
+KOKKOS mode with Kokkos version 4.3.1 is enabled (src/KOKKOS/kokkos.cpp:72)
+  will use up to 1 GPU(s) per node
+  using 20 OpenMP thread(s) per MPI task
+variable        dcdfreq index 5000
+variable        data_dir index ../../data/6zfo
+variable        outputname index step5_production_mini
+variable        inputname  index ${data_dir}/step4.1_equilibration
+variable        inputname  index ../../data/6zfo/step4.1_equilibration
+
+units           real
+boundary        p p p
+
+newton          on
+pair_style      lj/charmm/coul/long 12 15
+pair_modify     mix arithmetic
+kspace_style    pppm 1e-6
+
+prec_type       hfmix
+set prec_type to half-float mixed precision
+fhcut           value 8 basic_neigh_sep
+set fhcut_value to: 8.000000
+set neigh_sep_strategy to BASIC_NEIGH_SEP
+pair_sep_special  on
+set use_sep_sepcial to: 1
+pair_relative_coord on
+set use_relative_coord to: 1
+method_type     4
+
+atom_style      full
+bond_style      harmonic
+angle_style     charmm
+dihedral_style  charmm
+special_bonds   charmm
+improper_style  harmonic
+timestep        2
+
+fix             cmap all cmap ${data_dir}/charmmff.cmap
+fix             cmap all cmap ../../data/6zfo/charmmff.cmap
+Reading CMAP parameters from: ../../data/6zfo/charmmff.cmap
+fix_modify      cmap energy yes
+read_data       ${data_dir}/step3_input.data fix cmap crossterm CMAP
+read_data       ../../data/6zfo/step3_input.data fix cmap crossterm CMAP
+Reading data file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  778254 atoms
+  scanning bonds ...
+  4 = max bonds/atom
+  scanning angles ...
+  6 = max angles/atom
+  scanning dihedrals ...
+  24 = max dihedrals/atom
+  scanning impropers ...
+  2 = max impropers/atom
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading bonds ...
+  524508 bonds
+  reading angles ...
+  287460 angles
+  reading dihedrals ...
+  61096 dihedrals
+  reading impropers ...
+  3292 impropers
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     4 = max # of 1-2 neighbors
+     9 = max # of 1-3 neighbors
+    19 = max # of 1-4 neighbors
+    21 = max # of special neighbors
+  special bonds CPU = 0.555 seconds
+  read_data CPU = 12.471 seconds
+
+variable        laststep file ${inputname}.dump
+variable        laststep file ../../data/6zfo/step4.1_equilibration.dump
+next            laststep
+read_dump       ${inputname}.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump 25000  x y z vx vy vz ix iy iz box yes replace yes format native
+Scanning dump file ...
+Reading snapshot from dump file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  778254 atoms before read
+  778254 atoms in snapshot
+  0 atoms purged
+  778254 atoms replaced
+  0 atoms trimmed
+  0 atoms added
+  778254 atoms after read
+
+neighbor        2 bin
+neigh_modify    delay 5 every 1
+
+include         ${data_dir}/restraints/constraint_angletype
+include         ../../data/6zfo/restraints/constraint_angletype
+variable constraint_angletype  string "149"
+fix             1 all shake 1e-6 500 0 m 1.008 a ${constraint_angletype}
+fix             1 all shake 1e-6 500 0 m 1.008 a 149
+Finding SHAKE clusters ...
+    3822 = # of size 2 clusters
+    1708 = # of size 3 clusters
+     726 = # of size 4 clusters
+  252544 = # of frozen angles
+  find clusters CPU = 0.289 seconds
+fix             2 all npt temp 303.15 303.15 100.0 iso   0.9869233 0.9869233 1000 couple  xyz mtk no pchain 0
+
+thermo          100
+thermo_style    custom step time xlo xhi ylo yhi zlo zhi etotal pe ke temp press ebond eangle edihed eimp evdwl ecoul elong temp vol
+dump            1 all dcd ${dcdfreq} ${outputname}.dcd
+dump            1 all dcd 5000 ${outputname}.dcd
+dump            1 all dcd 5000 step5_production_mini.dcd
+dump_modify     1 unwrap yes
+dump            2 all custom ${dcdfreq} ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 step5_production_mini.dump id type x y z vx vy vz ix iy iz
+dump_modify     2 append no
+
+reset_timestep  0
+run             1000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.223306
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00034281929
+  estimated relative force accuracy = 1.0323901e-06
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: 0.533333, fhcut_value to 8.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+Neighbor list info ...
+  update: every = 1 steps, delay = 5 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 17
+  ghost atom cutoff = 17
+  binsize = 17, bins = 12 12 12
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/charmm/coul/long/kk, perpetual
+      attributes: half, newton on, kokkos_device
+      pair build: half/bin/newton/kk/device
+      stencil: half/bin/3d
+      bin: kk/device
+Setting up Verlet run ...
+  Unit style    : real
+  Current step  : 0
+  Time step     : 2
+WARNING: Fix with atom-based arrays not compatible with sending data in Kokkos communication, switching to classic exchange/border communication (src/KOKKOS/comm_kokkos.cpp:754)
+WARNING: Fix with atom-based arrays not compatible with Kokkos sorting on device, switching to classic host sorting (src/KOKKOS/atom_kokkos.cpp:216)
+resize x_rel to 1242891
+grow: resize d_neighbors to : 856079 * 16
+grow : resize neighbor special to 8
+grow: resize d_neighbors_special to : 856079 * 8
+resize d_neighbors to : 856079 * 2155
+resize d_neighbors_special to : 856079 * 25
+init lj param table, dim size : 57
+init float d_table, table size : 4096
+lazy init ev_array
+lazy init x_float
+x_float extent : 1242891, 3
+lazy init x_floatq
+lazy init f_float
+Per MPI rank memory allocation (min/avg/max) = 3046 | 3046 | 3046 Mbytes
+   Step          Time           Xlo            Xhi            Ylo            Yhi            Zlo            Zhi           TotEng         PotEng         KinEng          Temp          Press          E_bond        E_angle        E_dihed        E_impro         E_vdwl         E_coul         E_long          Temp          Volume    
+         0   0                   -101                  101                 -101                  101                 -101                  101                 -2099457.86409514    -2571648.6414292      472190.777334064     303.136650533955    -1058.54518033997     4166.58995356592     10944.1798133377     12702.5384018478     674.672845772161     249476.513969122     8308795.12088563    -11157754.4451732     303.136650533955     8242408            
+       100   200                 -100.543203279141     100.543203279141    -100.543203279141     100.543203279141    -100.543203279141     100.543203279141    -2099355.13265627    -2575635.02616483     476279.893508557     305.761778004208    -343.23128633129      4143.53046250505     11317.0049744008     12744.2712255246     720.237662219295     265106.984960567     8288872.65449387    -11157838.8824507     305.761778004208     8131078.23678294   
+resize x_rel to 1255319
+lazy init ev_array
+lazy init x_float
+x_float extent : 1255319, 3
+lazy init x_floatq
+lazy init f_float
+       200   400                 -99.7344955061618     99.7344955061618    -99.7344955061618     99.7344955061618    -99.7344955061618     99.7344955061618    -2106722.38624761    -2585829.86101289     479107.474765282     307.57702631574      331.131686786899     4157.75639277429     11085.815081929      12716.1940306274     688.280882999978     275998.153525226     8268166.62323294    -11157990.4018715     307.57702631574      7936447.95407694   
+       300   600                 -99.1811814481951     99.1811814481951    -99.1811814481951     99.1811814481951    -99.1811814481951     99.1811814481951    -2116882.51385583    -2593768.10078201     476885.586926178     306.150620570988     343.139105702284     4205.65336108303     11003.3514983554     12684.9569876211     729.368793624097     269943.175433646     8266324.55604862    -11158022.1030079     306.150620570988     7805088.26883099   
+       400   800                 -98.9362590662991     98.9362590662991    -98.9362590662991     98.9362590662991    -98.9362590662991     98.9362590662991    -2126587.07265438    -2600558.33394984     473971.261295465     304.279684176916     194.520443486158     4085.1051700359      11054.4490385138     12677.2999368431     670.575292432957     264905.27829857      8264803.29236861    -11158094.7544612     304.279684176916     7747408.2540055    
+       500   1000                -98.8658750024618     98.8658750024618    -98.8658750024618     98.8658750024618    -98.8658750024618     98.8658750024618    -2132470.42493507    -2604013.95310095     471543.528165883     302.721130040287     26.653930121161      4101.20025218805     10870.1958150935     12692.6690160457     663.080307857032     260274.98782385      8266149.32724791    -11158095.1542694     302.721130040287     7730885.30536389   
+       600   1200                -98.8381572793291     98.8381572793291    -98.8381572793291     98.8381572793291    -98.8381572793291     98.8381572793291    -2132684.40301045    -2604552.04166407     471867.638653623     302.92920222715      18.3844932311194     4059.59379565046     11079.9059071969     12643.0111292225     684.539545537971     260263.011990065     8265506.09926628    -11158120.33071       302.92920222715      7724384.90868503   
+       700   1400                -98.8180367569156     98.8180367569156    -98.8180367569156     98.8180367569156    -98.8180367569156     98.8180367569156    -2130939.85609797    -2603193.87946594     472254.023367972     303.177253171276    -15.1013138440464     4164.52128845307     10946.245672005      12669.6615267871     666.410794281766     258895.935065227     8268264.94322001    -11158121.030313      303.177253171276     7719668.50074687   
+       800   1600                -98.7731248331082     98.7731248331082    -98.7731248331082     98.7731248331082    -98.7731248331082     98.7731248331082    -2132850.29668178    -2605073.4503535      472223.153671716     303.157435468824    -26.9970280769447     4081.6894221139      10943.7122063231     12694.1235496375     670.763635422931     258484.127135499     8266876.18839072    -11158165.064149      303.157435468824     7709147.72060373   
+       900   1800                -98.7142603089002     98.7142603089002    -98.7142603089002     98.7142603089002    -98.7142603089002     98.7142603089002    -2134324.79006942    -2606734.58253691     472409.792467493     303.27725369088      42.3555456915762     4108.28941215655     10916.6099198687     12601.0081922985     696.909858859022     260116.579336374     8263573.54255001    -11158119.751602      303.27725369088      7695372.97394049   
+      1000   2000                -98.6825549060634     98.6825549060634    -98.6825549060634     98.6825549060634    -98.6825549060634     98.6825549060634    -2135423.12607109    -2607039.9645929      471616.838521812     302.76819376286      36.349355731931      4139.09256413923     10927.7842480986     12641.829811014      650.67521873915      259884.037973575     8263496.84118016    -11158154.6513684     302.76819376286      7687960.47212589   
+PairLJCharmmCoulLong::summary
+PairLJCutKokkos::cuda_kernel_time = 46.337917
+pair::summary_neighbor:
+pair::neighbor_sort_time : 0.000000
+pair::neighbor_build_time : 14.844723
+Loop time of 238.927 on 20 procs for 1000 steps with 778254 atoms
+
+Performance: 0.723 ns/day, 33.184 hours/ns, 4.185 timesteps/s, 3.257 Matom-step/s
+66.1% CPU use with 1 MPI tasks x 20 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 51.228     | 51.228     | 51.228     |   0.0 | 21.44
+Bond    | 4.2306     | 4.2306     | 4.2306     |   0.0 |  1.77
+Kspace  | 72.826     | 72.826     | 72.826     |   0.0 | 30.48
+Neigh   | 42.579     | 42.579     | 42.579     |   0.0 | 17.82
+Comm    | 20.003     | 20.003     | 20.003     |   0.0 |  8.37
+Output  | 0.0041301  | 0.0041301  | 0.0041301  |   0.0 |  0.00
+Modify  | 44.697     | 44.697     | 44.697     |   0.0 | 18.71
+Other   |            | 3.359      |            |       |  1.41
+
+Nlocal:         778254 ave      778254 max      778254 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:         474710 ave      474710 max      474710 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    8.09509e+08 ave 8.09509e+08 max 8.09509e+08 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 8.0950885e+08
+Ave neighs/atom = 1040.1602
+Ave special neighs/atom = 2.2164949
+Neighbor list builds = 134
+Dangerous builds = 0
+write_data      ${outputname}.data
+write_data      step5_production_mini.data
+System init for write_data ...
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.22432044
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00032046859
+  estimated relative force accuracy = 9.6508163e-07
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: 0.533333, fhcut_value to 8.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (src/write_data.cpp:364)
+Total wall time: 0:04:47

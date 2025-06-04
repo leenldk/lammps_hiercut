@@ -1,0 +1,517 @@
+LAMMPS (29 Aug 2024 - Update 1)
+KOKKOS mode with Kokkos version 4.3.1 is enabled (src/KOKKOS/kokkos.cpp:72)
+  will use up to 1 GPU(s) per node
+  using 20 OpenMP thread(s) per MPI task
+variable        dcdfreq index 5000
+variable        data_dir index ../../data/6zfo
+variable        outputname index step5_production_mini
+variable        inputname  index ${data_dir}/step4.1_equilibration
+variable        inputname  index ../../data/6zfo/step4.1_equilibration
+
+units           real
+boundary        p p p
+
+newton          on
+pair_style      lj/charmm/coul/long 12 15
+pair_modify     mix arithmetic
+kspace_style    pppm 1e-6
+
+prec_type       hfmix
+set prec_type to half-float mixed precision
+fhcut           value 8 basic_neigh_sep
+set fhcut_value to: 8.000000
+set neigh_sep_strategy to BASIC_NEIGH_SEP
+pair_sep_special  on
+set use_sep_sepcial to: 1
+pair_relative_coord on
+set use_relative_coord to: 1
+method_type     4
+
+atom_style      full
+bond_style      harmonic
+angle_style     charmm
+dihedral_style  charmm
+special_bonds   charmm
+improper_style  harmonic
+timestep        2
+
+fix             cmap all cmap ${data_dir}/charmmff.cmap
+fix             cmap all cmap ../../data/6zfo/charmmff.cmap
+Reading CMAP parameters from: ../../data/6zfo/charmmff.cmap
+fix_modify      cmap energy yes
+read_data       ${data_dir}/step3_input.data fix cmap crossterm CMAP
+read_data       ../../data/6zfo/step3_input.data fix cmap crossterm CMAP
+Reading data file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  778254 atoms
+  scanning bonds ...
+  4 = max bonds/atom
+  scanning angles ...
+  6 = max angles/atom
+  scanning dihedrals ...
+  24 = max dihedrals/atom
+  scanning impropers ...
+  2 = max impropers/atom
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading bonds ...
+  524508 bonds
+  reading angles ...
+  287460 angles
+  reading dihedrals ...
+  61096 dihedrals
+  reading impropers ...
+  3292 impropers
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     4 = max # of 1-2 neighbors
+     9 = max # of 1-3 neighbors
+    19 = max # of 1-4 neighbors
+    21 = max # of special neighbors
+  special bonds CPU = 0.318 seconds
+  read_data CPU = 6.907 seconds
+
+variable        laststep file ${inputname}.dump
+variable        laststep file ../../data/6zfo/step4.1_equilibration.dump
+next            laststep
+read_dump       ${inputname}.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump 25000  x y z vx vy vz ix iy iz box yes replace yes format native
+Scanning dump file ...
+Reading snapshot from dump file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  778254 atoms before read
+  778254 atoms in snapshot
+  0 atoms purged
+  778254 atoms replaced
+  0 atoms trimmed
+  0 atoms added
+  778254 atoms after read
+
+neighbor        2 bin
+neigh_modify    delay 5 every 1
+
+include         ${data_dir}/restraints/constraint_angletype
+include         ../../data/6zfo/restraints/constraint_angletype
+variable constraint_angletype  string "149"
+fix             1 all shake 1e-6 500 0 m 1.008 a ${constraint_angletype}
+fix             1 all shake 1e-6 500 0 m 1.008 a 149
+Finding SHAKE clusters ...
+    3822 = # of size 2 clusters
+    1708 = # of size 3 clusters
+     726 = # of size 4 clusters
+  252544 = # of frozen angles
+  find clusters CPU = 0.195 seconds
+fix             2 all npt temp 303.15 303.15 100.0 iso   0.9869233 0.9869233 1000 couple  xyz mtk no pchain 0
+
+thermo          100
+thermo_style    custom step time xlo xhi ylo yhi zlo zhi etotal pe ke temp press ebond eangle edihed eimp evdwl ecoul elong temp vol
+dump            1 all dcd ${dcdfreq} ${outputname}.dcd
+dump            1 all dcd 5000 ${outputname}.dcd
+dump            1 all dcd 5000 step5_production_mini.dcd
+dump_modify     1 unwrap yes
+dump            2 all custom ${dcdfreq} ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 step5_production_mini.dump id type x y z vx vy vz ix iy iz
+dump_modify     2 append no
+
+reset_timestep  0
+run             1000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.223306
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00034281929
+  estimated relative force accuracy = 1.0323901e-06
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: 0.533333, fhcut_value to 8.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+Neighbor list info ...
+  update: every = 1 steps, delay = 5 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 17
+  ghost atom cutoff = 17
+  binsize = 17, bins = 12 12 12
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/charmm/coul/long/kk, perpetual
+      attributes: half, newton on, kokkos_device
+      pair build: half/bin/newton/kk/device
+      stencil: half/bin/3d
+      bin: kk/device
+Setting up Verlet run ...
+  Unit style    : real
+  Current step  : 0
+  Time step     : 2
+WARNING: Fix with atom-based arrays not compatible with sending data in Kokkos communication, switching to classic exchange/border communication (src/KOKKOS/comm_kokkos.cpp:754)
+WARNING: Fix with atom-based arrays not compatible with Kokkos sorting on device, switching to classic host sorting (src/KOKKOS/atom_kokkos.cpp:216)
+resize x_rel to 1242891
+grow : resize neighbor special to 8
+resize : resize neighbor special to 25
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+init lj param table, dim size : 57
+init float d_table, table size : 4096
+lazy init ev_array
+lazy init x_float
+x_float extent : 1242891, 3
+lazy init x_floatq
+lazy init f_float
+Per MPI rank memory allocation (min/avg/max) = 3046 | 3046 | 3046 Mbytes
+   Step          Time           Xlo            Xhi            Ylo            Yhi            Zlo            Zhi           TotEng         PotEng         KinEng          Temp          Press          E_bond        E_angle        E_dihed        E_impro         E_vdwl         E_coul         E_long          Temp          Volume    
+         0   0                   -101                  101                 -101                  101                 -101                  101                 -2099458.07048474    -2571648.84781881     472190.777334064     303.136650533955    -1058.54688704788     4166.58995356592     10944.1798133377     12702.5384018478     674.672845772161     249476.517685995     8308794.91077891    -11157754.445173      303.136650533955     8242408            
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       100   200                 -100.543201729847     100.543201729847    -100.543201729847     100.543201729847    -100.543201729847     100.543201729847    -2099354.47899162    -2575632.53222385     476278.053232231     305.760596585112    -342.941031697157     4143.56079478774     11316.9298347672     12744.6963903764     720.266493915569     265112.343353623     8288869.30354067    -11157838.7980536     305.760596585112     8131077.86090173   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+resize x_rel to 1255319
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+lazy init ev_array
+lazy init x_float
+x_float extent : 1255319, 3
+lazy init x_floatq
+lazy init f_float
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       200   400                 -99.734634081822      99.734634081822     -99.734634081822      99.734634081822     -99.734634081822      99.734634081822     -2106711.83407175    -2585563.83765232     478852.003580571     307.413019132714     333.406908574204     4158.81922203819     11085.1890403385     12711.8407578273     689.14920502212      275977.775380899     8268444.19081558    -11157978.9524699     307.413019132714     7936481.03591198   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       300   600                 -99.1819212445807     99.1819212445807    -99.1819212445807     99.1819212445807    -99.1819212445807     99.1819212445807    -2116881.22421797    -2594286.2326384      477405.008420426     306.484078358687     346.026267851432     4216.26539918285     11031.5039415673     12695.3622128638     723.454295057585     270220.036122046     8265467.94782872    -11157999.2812649     306.484078358687     7805262.92552721   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       400   800                 -98.9377065912431     98.9377065912431    -98.9377065912431     98.9377065912431    -98.9377065912431     98.9377065912431    -2126638.20140068    -2600723.45539448     474085.253993804     304.352865116524     176.583042789934     4078.78693932655     11050.6044079269     12677.6007795623     681.362918739755     264680.103831169     8264842.72197755    -11158100.4193061     304.352865116524     7747748.31327856   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       500   1000                -98.8643072394088     98.8643072394088    -98.8643072394088     98.8643072394088    -98.8643072394088     98.8643072394088    -2132782.3712041     -2604448.51803346     471666.146829357     302.799848669966     43.8465634916296     4138.73743746366     10844.9126800088     12753.4160326917     661.193806946825     261067.142995671     8264881.93564212    -11158120.3633958     302.799848669966     7730517.53425519   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       600   1200                -98.8302239331046     98.8302239331046    -98.8302239331046     98.8302239331046    -98.8302239331046     98.8302239331046    -2133505.91889936    -2605857.53541332     472351.616513967     303.239905939632     10.5865483241256     4038.86666274501     10986.9366722535     12666.404918826      646.469018119721     260227.505049884     8264339.17641184    -11158100.2033048     303.239905939632     7722525.04090874   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       700   1400                -98.7886146932813     98.7886146932813    -98.7886146932813     98.7886146932813    -98.7886146932813     98.7886146932813    -2132242.3071711     -2604730.65910211     472488.351931014     303.327687231268    -35.7716462497295     4172.47866856119     10870.6616429782     12719.0280184566     679.649291437457     258245.269012563     8267336.27006619    -11158085.0839907     303.327687231268     7712775.19563349   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       800   1600                -98.7348485035722     98.7348485035722    -98.7348485035722     98.7348485035722    -98.7348485035722     98.7348485035722    -2133548.40086816    -2605412.67504395     471864.274175795     302.927042302415     25.3916775207387     4105.64097593822     10778.8593589465     12723.5630105021     678.564834243677     259709.976269751     8265314.81796395    -11158079.6562325     302.927042302415     7700188.90070274   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+       900   1800                -98.7011076528614     98.7011076528614    -98.7011076528614     98.7011076528614    -98.7011076528614     98.7011076528614    -2135501.66533968    -2606853.35767323     471351.692333548     302.597975428936     41.2923609517186     4156.15395199549     10903.9968991308     12721.3058039687     673.396773247792     259927.035948396     8263580.2979047     -11158158.3326657     302.597975428936     7692297.39676556   
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+neigh_sort with neigh_sep_strategy BASIC_NEIGH_SEP
+finish neigh_sort
+      1000   2000                -98.6877042660577     98.6877042660577    -98.6877042660577     98.6877042660577    -98.6877042660577     98.6877042660577    -2134445.5623514     -2606754.84233804     472309.279986631     303.212726770304    -15.7689440452072     4046.67564854558     10894.3959635078     12626.663286033      673.516264950288     257811.030221511     8265973.96801027    -11158114.1993841     303.212726770304     7689164.032631     
+PairLJCharmmCoulLong::summary
+PairLJCutKokkos::cuda_kernel_time = 30.308410
+pair::summary_neighbor:
+pair::neighbor_sort_time : 0.000000
+pair::neighbor_build_time : 10.692091
+Loop time of 101.561 on 20 procs for 1000 steps with 778254 atoms
+
+Performance: 1.701 ns/day, 14.106 hours/ns, 9.846 timesteps/s, 7.663 Matom-step/s
+93.0% CPU use with 1 MPI tasks x 20 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 30.844     | 30.844     | 30.844     |   0.0 | 30.37
+Bond    | 0.42653    | 0.42653    | 0.42653    |   0.0 |  0.42
+Kspace  | 22.427     | 22.427     | 22.427     |   0.0 | 22.08
+Neigh   | 24.666     | 24.666     | 24.666     |   0.0 | 24.29
+Comm    | 9.4812     | 9.4812     | 9.4812     |   0.0 |  9.34
+Output  | 0.0027252  | 0.0027252  | 0.0027252  |   0.0 |  0.00
+Modify  | 11.86      | 11.86      | 11.86      |   0.0 | 11.68
+Other   |            | 1.853      |            |       |  1.82
+
+Nlocal:         778254 ave      778254 max      778254 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:         474148 ave      474148 max      474148 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    8.09395e+08 ave 8.09395e+08 max 8.09395e+08 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 8.0939463e+08
+Ave neighs/atom = 1040.0135
+Ave special neighs/atom = 2.2164949
+Neighbor list builds = 136
+Dangerous builds = 0
+write_data      ${outputname}.data
+write_data      step5_production_mini.data
+System init for write_data ...
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.22431817
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00032051707
+  estimated relative force accuracy = 9.6522764e-07
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: 0.533333, fhcut_value to 8.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (src/write_data.cpp:364)
+Total wall time: 0:02:08

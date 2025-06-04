@@ -1,0 +1,244 @@
+==PROF== Connected to process 2195562 (/fasthome/leenldk/work/lammps_dev/build_kokkos/lmp)
+LAMMPS (29 Aug 2024 - Update 1)
+KOKKOS mode with Kokkos version 4.3.1 is enabled (src/KOKKOS/kokkos.cpp:72)
+  will use up to 1 GPU(s) per node
+  using 20 OpenMP thread(s) per MPI task
+variable        dcdfreq index 5000
+variable        data_dir index ../../data/6zfo
+variable        outputname index step5_production_mini
+variable        inputname  index ${data_dir}/step4.1_equilibration
+variable        inputname  index ../../data/6zfo/step4.1_equilibration
+
+units           real
+boundary        p p p
+
+newton          on
+pair_style      lj/charmm/coul/long 12 15
+pair_modify     mix arithmetic
+kspace_style    pppm 1e-6
+
+prec_type       float
+set prec_type to float precision
+pair_sep_special  on
+set use_sep_sepcial to: 1
+
+atom_style      full
+bond_style      harmonic
+angle_style     charmm
+dihedral_style  charmm
+special_bonds   charmm
+improper_style  harmonic
+timestep        2
+
+fix             cmap all cmap ${data_dir}/charmmff.cmap
+fix             cmap all cmap ../../data/6zfo/charmmff.cmap
+Reading CMAP parameters from: ../../data/6zfo/charmmff.cmap
+fix_modify      cmap energy yes
+read_data       ${data_dir}/step3_input.data fix cmap crossterm CMAP
+read_data       ../../data/6zfo/step3_input.data fix cmap crossterm CMAP
+Reading data file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  778254 atoms
+  scanning bonds ...
+  4 = max bonds/atom
+  scanning angles ...
+  6 = max angles/atom
+  scanning dihedrals ...
+  24 = max dihedrals/atom
+  scanning impropers ...
+  2 = max impropers/atom
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  1 by 1 by 1 MPI processor grid
+  reading bonds ...
+  524508 bonds
+  reading angles ...
+  287460 angles
+  reading dihedrals ...
+  61096 dihedrals
+  reading impropers ...
+  3292 impropers
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     4 = max # of 1-2 neighbors
+     9 = max # of 1-3 neighbors
+    19 = max # of 1-4 neighbors
+    21 = max # of special neighbors
+  special bonds CPU = 0.324 seconds
+  read_data CPU = 7.267 seconds
+
+variable        laststep file ${inputname}.dump
+variable        laststep file ../../data/6zfo/step4.1_equilibration.dump
+next            laststep
+read_dump       ${inputname}.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump ${laststep}  x y z vx vy vz ix iy iz box yes replace yes format native
+read_dump       ../../data/6zfo/step4.1_equilibration.dump 25000  x y z vx vy vz ix iy iz box yes replace yes format native
+Scanning dump file ...
+Reading snapshot from dump file ...
+  orthogonal box = (-101 -101 -101) to (101 101 101)
+  778254 atoms before read
+  778254 atoms in snapshot
+  0 atoms purged
+  778254 atoms replaced
+  0 atoms trimmed
+  0 atoms added
+  778254 atoms after read
+
+neighbor        2 bin
+neigh_modify    delay 5 every 1
+
+include         ${data_dir}/restraints/constraint_angletype
+include         ../../data/6zfo/restraints/constraint_angletype
+variable constraint_angletype  string "149"
+fix             1 all shake 1e-6 500 0 m 1.008 a ${constraint_angletype}
+fix             1 all shake 1e-6 500 0 m 1.008 a 149
+Finding SHAKE clusters ...
+    3822 = # of size 2 clusters
+    1708 = # of size 3 clusters
+     726 = # of size 4 clusters
+  252544 = # of frozen angles
+  find clusters CPU = 0.203 seconds
+fix             2 all npt temp 303.15 303.15 100.0 iso   0.9869233 0.9869233 1000 couple  xyz mtk no pchain 0
+
+thermo          100
+thermo_style    custom step time xlo xhi ylo yhi zlo zhi etotal pe ke temp press ebond eangle edihed eimp evdwl ecoul elong temp vol
+dump            1 all dcd ${dcdfreq} ${outputname}.dcd
+dump            1 all dcd 5000 ${outputname}.dcd
+dump            1 all dcd 5000 step5_production_mini.dcd
+dump_modify     1 unwrap yes
+dump            2 all custom ${dcdfreq} ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 ${outputname}.dump id type x y z vx vy vz ix iy iz
+dump            2 all custom 5000 step5_production_mini.dump id type x y z vx vy vz ix iy iz
+dump_modify     2 append no
+
+reset_timestep  0
+run             1000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+The log file lists these citations in BibTeX format.
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.223306
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00034281929
+  estimated relative force accuracy = 1.0323901e-06
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: -1.000000, fhcut_value to -1.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+Neighbor list info ...
+  update: every = 1 steps, delay = 5 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 17
+  ghost atom cutoff = 17
+  binsize = 17, bins = 12 12 12
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/charmm/coul/long/kk, perpetual
+      attributes: half, newton on, kokkos_device
+      pair build: half/bin/newton/kk/device
+      stencil: half/bin/3d
+      bin: kk/device
+Setting up Verlet run ...
+  Unit style    : real
+  Current step  : 0
+  Time step     : 2
+WARNING: Fix with atom-based arrays not compatible with sending data in Kokkos communication, switching to classic exchange/border communication (src/KOKKOS/comm_kokkos.cpp:754)
+WARNING: Fix with atom-based arrays not compatible with Kokkos sorting on device, switching to classic host sorting (src/KOKKOS/atom_kokkos.cpp:216)
+resize x_rel to 1242891
+grow : resize neighbor special to 8
+resize : resize neighbor special to 25
+init lj param table, dim size : 57
+init float d_table, table size : 4096
+lazy init ev_array
+lazy init x_float
+x_float extent : 1242891, 3
+lazy init x_floatq
+lazy init f_float
+Per MPI rank memory allocation (min/avg/max) = 3046 | 3046 | 3046 Mbytes
+   Step          Time           Xlo            Xhi            Ylo            Yhi            Zlo            Zhi           TotEng         PotEng         KinEng          Temp          Press          E_bond        E_angle        E_dihed        E_impro         E_vdwl         E_coul         E_long          Temp          Volume    
+         0   0                   -101                  101                 -101                  101                 -101                  101                 -2099458.22250871    -2571648.99984277     472190.777334064     303.136650533955    -1058.54058731098     4166.58995356592     10944.1798133377     12702.5384018478     674.672845772161     249476.353409856     8308794.92303133    -11157754.4451732     303.136650533955     8242408            
+lazy init ev_array
+       100   200                 -100.54319858248      100.54319858248     -100.54319858248      100.54319858248     -100.54319858248      100.54319858248     -2099360.0036302     -2575636.74403956     476276.74040936      305.759753780155    -343.320326380051     4143.6413471934      11316.8681136097     12744.7195695931     720.281555845056     265104.921347143     8288871.81702611    -11157838.1954305     305.759753780155     8131077.09730496   
+resize x_rel to 1255319
+lazy init ev_array
+lazy init x_float
+x_float extent : 1255319, 3
+lazy init x_floatq
+lazy init f_float
+==PROF== Profiling "float_force_kernel_expr_performance_sep_special": 0%
+==WARNING== Launching the workload is taking more time than expected. If this continues to hang, terminate the profile and re-try by profiling the range of all related launches using '--replay-mode range'. See https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#replay for more details.
+....50%....100% - 50 passes
+       200   400                 -99.7346925763343     99.7346925763343    -99.7346925763343     99.7346925763343    -99.7346925763343     99.7346925763343    -2106728.36784201    -2585752.03159691     479023.663754897     307.523221391575     329.893197980626     4159.46237432805     11086.0951207988     12715.3449787966     688.64004667937      275920.397977252     8268313.8423257     -11157983.7492304     307.523221391575     7936495.00019423   
+       300   600                 -99.1816742635502     99.1816742635502    -99.1816742635502     99.1816742635502    -99.1816742635502     99.1816742635502    -2116893.94285915    -2593890.98234585     476997.039486699     306.22217079499      328.710374968398     4208.99098889088     11008.0075574517     12705.1368567073     726.306975536617     269656.452062508     8266455.02411087    -11158017.246051      306.22217079499      7805204.61609776   
+       400   800                 -98.9337369490542     98.9337369490542    -98.9337369490542     98.9337369490542    -98.9337369490542     98.9337369490542    -2126581.83047297    -2600870.80893971     474288.978466739     304.483651987683     203.933122617396     4039.08523580538     11029.968687891      12698.4296969076     697.79662084982      265334.398016919     8264064.48018915    -11158093.9953876     304.483651987683     7746815.77029836   
+       500   1000                -98.8618314965747     98.8618314965747    -98.8618314965747     98.8618314965747    -98.8618314965747     98.8618314965747    -2132998.09509697    -2604523.99779567     471525.902698703     302.709814857227     44.6886829188573     4176.21721944032     10928.2604494515     12693.262447559      668.180008710575     261322.515948274     8264458.38808164    -11158126.4735035     302.709814857227     7729936.78996058   
+       600   1200                -98.8276064502267     98.8276064502267    -98.8276064502267     98.8276064502267    -98.8276064502267     98.8276064502267    -2134716.69096163    -2606340.44897534     471623.758013713     302.772635932633     27.1988177218972     4051.45990665824     11045.7148326708     12686.7708531714     661.536918637899     260773.01152944      8263290.66314388    -11158173.460194      302.772635932633     7721911.47227802   
+       700   1400                -98.8075432707178     98.8075432707178    -98.8075432707178     98.8075432707178    -98.8075432707178     98.8075432707178    -2133241.17584139    -2605707.85336698     472466.677525594     303.313772714135    -1.36361033423823     4132.53641321927     10937.7026346798     12674.9392642886     671.68256950699      260149.85861308      8264464.84159364    -11158097.8743201     303.313772714135     7717209.5073553    
+       800   1600                -98.7771930595786     98.7771930595786    -98.7771930595786     98.7771930595786    -98.7771930595786     98.7771930595786    -2132406.74718809    -2604646.39015196     472239.642963866     303.168021251164     4.42010134774698     4189.20345500147     10988.1654328374     12670.0980716614     677.946789270158     259551.206329269     8266023.04427782    -11158079.8048035     303.168021251164     7710100.32336809   
+       900   1800                -98.7518496132006     98.7518496132006    -98.7518496132006     98.7518496132006    -98.7518496132006     98.7518496132006    -2134486.87671146    -2606899.3147613      472412.438049837     303.278952099678     16.3193374924481     3994.27976195647     10931.7248936034     12705.805376678      664.046819846468     260110.028313111     8263427.32781433    -11158074.453239      303.278952099678     7704167.26195742   
+      1000   2000                -98.7251415198841     98.7251415198841    -98.7251415198841     98.7251415198841    -98.7251415198841     98.7251415198841    -2136148.88061238    -2608130.93440901     471982.053796629     303.002654367442    -23.3774469164549     4146.42099673423     10864.5210216144     12638.5063338198     683.569333637545     259642.414816236     8262656.66402571    -11158088.0129805     303.002654367442     7697918.02286435   
+PairLJCharmmCoulLong::summary
+PairLJCutKokkos::cuda_kernel_time = 55.449102
+pair::summary_neighbor:
+pair::neighbor_sort_time : 0.000000
+pair::neighbor_build_time : 10.649522
+Loop time of 119.382 on 20 procs for 1000 steps with 778254 atoms
+
+Performance: 1.447 ns/day, 16.581 hours/ns, 8.376 timesteps/s, 6.519 Matom-step/s
+83.5% CPU use with 1 MPI tasks x 20 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 55.926     | 55.926     | 55.926     |   0.0 | 46.85
+Bond    | 0.76284    | 0.76284    | 0.76284    |   0.0 |  0.64
+Kspace  | 26.329     | 26.329     | 26.329     |   0.0 | 22.05
+Neigh   | 11.162     | 11.162     | 11.162     |   0.0 |  9.35
+Comm    | 8.8258     | 8.8258     | 8.8258     |   0.0 |  7.39
+Output  | 0.006157   | 0.006157   | 0.006157   |   0.0 |  0.01
+Modify  | 14.524     | 14.524     | 14.524     |   0.0 | 12.17
+Other   |            | 1.846      |            |       |  1.55
+
+Nlocal:         778254 ave      778254 max      778254 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:         474141 ave      474141 max      474141 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    8.08436e+08 ave 8.08436e+08 max 8.08436e+08 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 8.0843612e+08
+Ave neighs/atom = 1038.7818
+Ave special neighs/atom = 2.2164949
+Neighbor list builds = 136
+Dangerous builds = 0
+write_data      ${outputname}.data
+write_data      step5_production_mini.data
+System init for write_data ...
+PPPM Kokkos initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 0.22430166
+  grid = 180 180 180
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00032086972
+  estimated relative force accuracy = 9.6628963e-07
+  using double precision cuFFT
+  3d grid and FFT values/proc = 6539203 5832000
+perform Pair::init()
+initialize p_fhcut to: -1.000000, fhcut_value to -1.000000
+Generated 0 of 1540 mixed pair_coeff terms from arithmetic mixing rule
+cut_sq in NPairKokkos : 225.000000
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (src/write_data.cpp:364)
+Total wall time: 0:02:27
+==PROF== Disconnected from process 2195562
+==PROF== Report: /fasthome/leenldk/work/lammps_dev/verification/6zfo_memory_usage/FP32_optimized/report.ncu-rep

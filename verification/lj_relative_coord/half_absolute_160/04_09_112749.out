@@ -1,0 +1,106 @@
+LAMMPS (29 Aug 2024 - Update 1)
+KOKKOS mode with Kokkos version 4.3.1 is enabled (src/KOKKOS/kokkos.cpp:72)
+  will use up to 1 GPU(s) per node
+  using 20 OpenMP thread(s) per MPI task
+Lattice spacing in x,y,z = 1.6795962 1.6795962 1.6795962
+Created orthogonal box = (0 0 0) to (268.73539 268.73539 268.73539)
+  1 by 1 by 1 MPI processor grid
+Created 16384000 atoms
+  using lattice units in orthogonal box = (0 0 0) to (268.73539 268.73539 268.73539)
+  create_atoms CPU = 1.487 seconds
+atom nlocal : 16384000, nghost : 0, nmax : 16384000
+in PairLJCutKokkos::PairLJCutKokkos, addr 0x5593b0fa0bd0
+set use_relative_coord to: 0
+set prec_type to half precision
+perform Pair::init()
+PairLJCutKokkos init m_cutsq[1][1] = 16.000000
+initialize p_fhcut to: -1.000000, fhcut_value to -1.000000
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+cut_sq in NPairKokkos : 16.000000
+Neighbor list info ...
+  update: every = 20 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4.3
+  ghost atom cutoff = 4.3
+  binsize = 4.3, bins = 63 63 63
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/kk, perpetual
+      attributes: full, newton off, kokkos_device
+      pair build: full/bin/kk/device
+      stencil: full/bin/3d
+      bin: kk/device
+Setting up Verlet run ...
+  Unit style    : lj
+  Current step  : 0
+  Time step     : 0.005
+resize x_rel to 18279106
+lazy init ev_array
+lazy init x_float_rel
+x_float_rel extent : 18279106, 3
+lazy init x_half
+x_half extent : 18279106
+Per MPI rank memory allocation (min/avg/max) = 1.286e+04 | 1.286e+04 | 1.286e+04 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   1.44                -6.96857543620941     0                   -4.80857556804535    -4.62879096609503   
+         1   1.43681571896013    -6.96432874754099     0                   -4.8091053006452     -4.63461802792717   
+         2   1.42702991088113    -6.95777479870377     0                   -4.81723006303057    -4.6294689191552    
+         3   1.41035081600232    -6.94077240061736     0                   -4.82524630573536    -4.55042906431832   
+         4   1.38693956839669    -6.91335070510761     0                   -4.83294147949069    -4.40739338884588   
+         5   1.35703467459737    -6.87881116526114     0                   -4.84325927760532    -4.2241235257993    
+         6   1.31933747579123    -6.82243888045464     0                   -4.84343278755674    -3.94021142532867   
+         7   1.27160350159253    -6.73872861685602     0                   -4.831323480886      -3.53830357690064   
+         8   1.21289326706686    -6.62967417325528     0                   -4.81033438369869    -3.0338786552278    
+         9   1.14437229659024    -6.5019889219856      0                   -4.78543058187065    -2.46070351386782   
+        10   1.06922858637963    -6.36283725454392     0                   -4.75899447286527    -1.84773923735601   
+        11   0.992620897293461   -6.222680819798       0                   -4.73374956473497    -1.23527236751046   
+        12   0.919967327957625   -6.08918168711029     0                   -4.70923077939938    -0.650074344522343  
+        13   inf                 -5.96620138465506     0                    inf                  inf                
+        14   inf                 -5.80818614119789     0                    inf                  inf                
+        15   nan                 -5.7084536375709      0                    nan                  nan                
+        16   nan                 -5.67117434679103     0                    nan                  nan                
+        17   nan                 -5.61475353105131     0                    nan                  nan                
+        18   nan                 -5.55568823908729     0                    nan                  nan                
+        19   nan                  2.64729891235912     0                    nan                  nan                
+cudaDeviceSynchronize() error( cudaErrorIllegalAddress): an illegal memory access was encountered /fasthome/leenldk/work/lammps_dev/lib/kokkos/core/src/Cuda/Kokkos_Cuda_Instance.cpp:153
+Backtrace:
+[0x55937528b0f5] 
+[0x559375268b2c] 
+[0x559375290aec] 
+[0x559375290c4a] 
+[0x55937526a545] 
+[0x5593735f268c] 
+[0x5593735b1658] 
+[0x559373b22a27] 
+[0x559373401f1b] 
+[0x5593732f0354] 
+[0x5593732f0a6e] 
+[0x55937323dced] 
+[0x7f82464e824a] 
+[0x7f82464e8305] __libc_start_main
+[0x5593732e4af1] 
+[umi:3816630] *** Process received signal ***
+[umi:3816630] Signal: Aborted (6)
+[umi:3816630] Signal code:  (-6)
+[umi:3816630] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x3c050)[0x7f82464fd050]
+[umi:3816630] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x8aebc)[0x7f824654bebc]
+[umi:3816630] [ 2] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x12)[0x7f82464fcfb2]
+[umi:3816630] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f82464e7472]
+[umi:3816630] [ 4] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2231b39)[0x559375268b39]
+[umi:3816630] [ 5] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2259aec)[0x559375290aec]
+[umi:3816630] [ 6] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2259c4a)[0x559375290c4a]
+[umi:3816630] [ 7] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2233545)[0x55937526a545]
+[umi:3816630] [ 8] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x5bb68c)[0x5593735f268c]
+[umi:3816630] [ 9] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x57a658)[0x5593735b1658]
+[umi:3816630] [10] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0xaeba27)[0x559373b22a27]
+[umi:3816630] [11] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x3caf1b)[0x559373401f1b]
+[umi:3816630] [12] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2b9354)[0x5593732f0354]
+[umi:3816630] [13] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2b9a6e)[0x5593732f0a6e]
+[umi:3816630] [14] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x206ced)[0x55937323dced]
+[umi:3816630] [15] /lib/x86_64-linux-gnu/libc.so.6(+0x2724a)[0x7f82464e824a]
+[umi:3816630] [16] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x85)[0x7f82464e8305]
+[umi:3816630] [17] /fasthome/leenldk/work/lammps_dev/verification/lj_relative_coord/half_absolute_160/../../../build_kokkos/lmp(+0x2adaf1)[0x5593732e4af1]
+[umi:3816630] *** End of error message ***
+--------------------------------------------------------------------------
+prterun noticed that process rank 0 with PID 3816630 on node umi exited on
+signal 6 (Aborted).
+--------------------------------------------------------------------------

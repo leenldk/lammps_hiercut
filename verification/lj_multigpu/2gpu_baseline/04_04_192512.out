@@ -1,0 +1,101 @@
+LAMMPS (29 Aug 2024 - Update 1)
+KOKKOS mode with Kokkos version 4.3.1 is enabled (src/KOKKOS/kokkos.cpp:72)
+  will use up to 2 GPU(s) per node
+  using 10 OpenMP thread(s) per MPI task
+Lattice spacing in x,y,z = 1.6795962 1.6795962 1.6795962
+Created orthogonal box = (0 0 0) to (268.73539 268.73539 268.73539)
+  1 by 1 by 2 MPI processor grid
+Created 16384000 atoms
+  using lattice units in orthogonal box = (0 0 0) to (268.73539 268.73539 268.73539)
+  create_atoms CPU = 0.775 seconds
+atom nlocal : 8192000, nghost : 0, nmax : 9011200
+in PairLJCutKokkos::PairLJCutKokkos, addr 0x55742a9d8a20
+atom nlocal : 8192000, nghost : 0, nmax : 9011200
+in PairLJCutKokkos::PairLJCutKokkos, addr 0x563037f625e0
+set use_relative_coord to: 0
+set prec_type to default precision
+perform Pair::init()
+PairLJCutKokkos init m_cutsq[1][1] = 16.000000
+initialize p_fhcut to: -1.000000, fhcut_value to -1.000000
+Generated 0 of 0 mixed pair_coeff terms from geometric mixing rule
+set use_relative_coord to: 0
+set prec_type to default precision
+perform Pair::init()
+PairLJCutKokkos init m_cutsq[1][1] = 16.000000
+initialize p_fhcut to: -1.000000, fhcut_value to -1.000000
+cut_sq in NPairKokkos : 16.000000
+Neighbor list info ...
+  update: every = 20 steps, delay = 0 steps, check = no
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4.3
+  ghost atom cutoff = 4.3
+  binsize = 4.3, bins = 63 63 63
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/kk, perpetual
+      attributes: full, newton off, kokkos_device
+      pair build: full/bin/kk/device
+      stencil: full/bin/3d
+      bin: kk/device
+cut_sq in NPairKokkos : 16.000000
+Setting up Verlet run ...
+  Unit style    : lj
+  Current step  : 0
+  Time step     : 0.005
+resize x_rel to 9377090
+resize x_rel to 9377090
+Per MPI rank memory allocation (min/avg/max) = 3775 | 3775 | 3775 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   1.44                -7.10925987632087     0                   -4.94926000815681    -5.5858270889386    
+       100   0.760364396608114   -6.08950435323153     0                   -4.9489578279328     -0.350626406831047  
+       200   0.758014830155974   -6.08618766993958     0                   -4.94916549410395    -0.31724408145403   
+       300   0.7497536394112     -6.07395103499185     0                   -4.94932064451704    -0.239466147699681  
+       400   0.740692649492363   -6.06051686284707     0                   -4.94947795642097    -0.156494177528861  
+       500   0.732037020476467   -6.04768918363872     0                   -4.94963371994401    -0.0775700996773762 
+       600   0.724356407366818   -6.03631022281155     0                   -4.94977567807813    -0.00836422308697624
+       700   0.717598182693854   -6.02629315640825     0                   -4.94989594806555     0.0506937128996172 
+       800   0.711990574952834   -6.01797401790573     0                   -4.94998822066117     0.0979035992090256 
+       900   0.707869578312442   -6.01185527113097     0                   -4.9500509684697      0.131662903608754  
+      1000   0.704742863988109   -6.00720783737314     0                   -4.95009360591212     0.156253219438332  
+PairLJCutKokkos::summary
+PairLJCutKokkos::pair_compute_time = 33.618588
+PairLJCutKokkos::cuda_kernel_time = 0.000000
+PairLJCutKokkos::init_time = 0.000000
+pair::summary_neighbor:
+pair::neighbor_sort_time : 0.000000
+pair::neighbor_build_time : 7.365148
+PairLJCutKokkos::summary
+PairLJCutKokkos::pair_compute_time = 34.308581
+PairLJCutKokkos::cuda_kernel_time = 0.000000
+PairLJCutKokkos::init_time = 0.000000
+pair::summary_neighbor:
+pair::neighbor_sort_time : 0.000000
+pair::neighbor_build_time : 7.471323
+Loop time of 43.6333 on 20 procs for 1000 steps with 16384000 atoms
+
+Performance: 9900.687 tau/day, 22.918 timesteps/s, 375.493 Matom-step/s
+99.7% CPU use with 2 MPI tasks x 10 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 33.57      | 33.916     | 34.261     |   5.9 | 77.73
+Neigh   | 6.1848     | 6.2409     | 6.2971     |   2.2 | 14.30
+Comm    | 2.1006     | 2.4912     | 2.8818     |  24.7 |  5.71
+Output  | 0.0033739  | 0.025745   | 0.048117   |  13.9 |  0.06
+Modify  | 0.9204     | 0.93162    | 0.94284    |   1.2 |  2.14
+Other   |            | 0.02826    |            |       |  0.06
+
+Nlocal:      8.192e+06 ave 8.19228e+06 max 8.19172e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:    1.09416e+06 ave 1.09421e+06 max 1.09412e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:              0 ave           0 max           0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+FullNghs:    2.303e+09 ave 2.30316e+09 max 2.30285e+09 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 4.6060051e+09
+Ave neighs/atom = 281.12824
+Neighbor list builds = 50
+Dangerous builds not checked
+Total wall time: 0:00:48
